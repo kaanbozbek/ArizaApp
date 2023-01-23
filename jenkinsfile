@@ -1,0 +1,23 @@
+pipeline {
+    agent {
+        label 'windows'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                // Build the application using dotnet
+                bat 'dotnet build -c Release'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Publish the application for deployment
+                bat 'dotnet publish -c Release -o publish'
+                // Copy the published files to the IIS deployment directory
+                bat 'robocopy \\DTEKCMDBMICRO\jenkins\workspace C:\site /zb /z /e /v /r:1 /w:1 "'
+                // Restart the IIS application pool
+                bat 'iisreset /restart'
+            }
+        }
+    }
+}
